@@ -13,8 +13,8 @@ api.add_group = function(group) {
   return group;
 };
 
-api.add_group_search = function(query, groups) {
-  this.group_search_store[query] = groups;
+api.set_group_search_results = function(query, group_keys) {
+  this.groups_search_store[query.toLowerCase()] = group_keys;
 };
 
 api._handle_groups_list = function(cmd, reply) {
@@ -28,8 +28,11 @@ api._handle_groups_list = function(cmd, reply) {
 
 api._handle_groups_search = function(cmd, reply) {
   var groups_store = this.groups_store;
+  var matched_keys = api.groups_search_store[cmd.query.toLowerCase()] || [];
   api._reply_success(cmd, reply, {
-    groups: api.group_search_store[cmd.query] || []
+    groups: matched_keys.map(function (key) {
+      return groups_store[key];
+    })
   });
 };
 
@@ -121,21 +124,42 @@ describe('Go Contacts', function () {
       async: true
     });
 
+    // prime groups
     api.add_group({ key: 'group-1', name: 'Group 1'});
     api.add_group({ key: 'group-2', name: 'Group 2'});
     api.add_group({ key: 'group-3', name: 'Group 3'});
+    api.set_group_search_results('Group 1 and Group 2',
+                                  ['group-1', 'group-2']);
+    api.set_group_search_results('Group 3 or Group 4',
+                                  ['group-3']);
   });
 
-  it('should list known groups', function(done) {
+  it('should give an option menu', function(done) {
+    var p = tester.check_state({
+      user: null,
+      content: null,
+      next_state: 'initial_state',
+      response: (
+        'Hi, you have 3 Groups. What do you want to do\\?[^]' +
+        '1. List them[^]' +
+        '2. Search them[^]' +
+        '3. Get one by name[^]' +
+        '4. Get or create one by name$'
+      )
+    }).then(done, done);
+  });
+
+  it('should use groups.list', function(done) {
     var p = tester.check_state({
         user: null,
-        content: null,
-        next_state: 'initial_state',
+        content: '1',
+        next_state: 'list',
         response: (
             'Hi, you have the following groups:[^]' +
-            '1. Group 1[^]' +
-            '2. Group 2[^]' +
-            '3. Group 3$')
+            '- Group 1[^]' +
+            '- Group 2[^]' +
+            '- Group 3$'),
+        continue_session: false
     }).then(done, done);
   });
 });
