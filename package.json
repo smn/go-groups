@@ -1,0 +1,31 @@
+{
+  "name": "go-groups",
+  "version": "0.0.1",
+  "description": "A Vumi Go application that show how to work with groups.",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "vumigo_v01": "0.1.x",
+    "jed": "0.5.x"
+  },
+  "devDependencies": {
+    "mocha": "~1.7.1"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/smn/go-groups"
+  },
+  "keywords": [
+    "vumi",
+    "ussd",
+    "sms"
+  ],
+  "author": "Simon de Haan <simon@praekeltfoundation.org>",
+  "license": "BSD",
+  "readmeFilename": "README.rst"
+}
