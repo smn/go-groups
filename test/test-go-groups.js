@@ -105,7 +105,7 @@ api._handle_groups_count_members = function(cmd, reply) {
   if(!group) {
     api._reply_fail(cmd, reply, 'Group not found');
   } else {
-    var is_smart_group = (cmd.query ? true : false);
+    var is_smart_group = (group.query ? true : false);
     var member_count;
     if(is_smart_group) {
       // TODO:  not sure what to do about this one as I don't feel like
